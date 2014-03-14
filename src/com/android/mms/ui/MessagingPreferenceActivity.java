@@ -91,6 +91,9 @@ public class MessagingPreferenceActivity extends PreferenceActivity
     public static final String AUTO_DELETE              = "pref_key_auto_delete";
     public static final String GROUP_MMS_MODE           = "pref_key_mms_group_mms";
 
+    // Smart Dialer
+    public static final String SMART_DIALER_ENABLED = "pref_key_mms_smart_dialer";
+
     // QuickMessage
     public static final String QUICKMESSAGE_ENABLED      = "pref_key_quickmessage";
     public static final String QM_LOCKSCREEN_ENABLED     = "pref_key_qm_lockscreen";
@@ -832,6 +835,11 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         boolean qmDarkThemeEnabled =
             prefs.getBoolean(MessagingPreferenceActivity.QM_DARK_THEME_ENABLED, false);
         return qmDarkThemeEnabled;
+    }
+
+    public static boolean isSmartCallEnabled(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(SMART_DIALER_ENABLED, false);
     }
 
     private void registerListeners() {

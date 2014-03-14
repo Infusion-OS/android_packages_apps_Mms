@@ -44,6 +44,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.app.Service;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -125,6 +126,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Button;
 
+<<<<<<< HEAD
+=======
+import com.android.contacts.common.util.MaterialColorMapUtils;
+import com.android.contacts.common.util.MaterialColorMapUtils.MaterialPalette;
+import com.android.contacts.common.util.PickupGestureDetector;
+import com.android.internal.telephony.PhoneConstants;
+import com.android.internal.telephony.RILConstants;
+>>>>>>> 10048ae... [1/3] Mms: Smart Dialer
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.TelephonyProperties;
 import com.android.mms.LogTag;
@@ -172,6 +181,7 @@ import com.google.android.mms.pdu.SendReq;
  */
 public class ComposeMessageActivity extends Activity
         implements View.OnClickListener, TextView.OnEditorActionListener,
+<<<<<<< HEAD
         MessageStatusListener, Contact.UpdateListener {
     public static final int REQUEST_CODE_ATTACH_IMAGE     = 100;
     public static final int REQUEST_CODE_TAKE_PICTURE     = 101;
@@ -183,6 +193,25 @@ public class ComposeMessageActivity extends Activity
     public static final int REQUEST_CODE_ECM_EXIT_DIALOG  = 107;
     public static final int REQUEST_CODE_ADD_CONTACT      = 108;
     public static final int REQUEST_CODE_PICK             = 109;
+=======
+        MessageStatusListener, Contact.UpdateListener, IZoomListener,
+        PickupGestureDetector.PickupListener {
+    public static final int REQUEST_CODE_ATTACH_IMAGE                   = 100;
+    public static final int REQUEST_CODE_TAKE_PICTURE                   = 101;
+    public static final int REQUEST_CODE_ATTACH_VIDEO                   = 102;
+    public static final int REQUEST_CODE_TAKE_VIDEO                     = 103;
+    public static final int REQUEST_CODE_ATTACH_SOUND                   = 104;
+    public static final int REQUEST_CODE_RECORD_SOUND                   = 105;
+    public static final int REQUEST_CODE_CREATE_SLIDESHOW               = 106;
+    public static final int REQUEST_CODE_ECM_EXIT_DIALOG                = 107;
+    public static final int REQUEST_CODE_ADD_CONTACT                    = 108;
+    public static final int REQUEST_CODE_PICK                           = 109;
+    public static final int REQUEST_CODE_ATTACH_ADD_CONTACT_INFO        = 110;
+    public static final int REQUEST_CODE_ATTACH_ADD_CONTACT_VCARD       = 111;
+    public static final int REQUEST_CODE_ATTACH_REPLACE_CONTACT_INFO    = 112;
+    public static final int REQUEST_CODE_ADD_RECIPIENTS                 = 113;
+    public static final int REQUEST_CODE_ADD_CALENDAR_EVENTS            = 114;
+>>>>>>> 10048ae... [1/3] Mms: Smart Dialer
 
     private static final String TAG = LogTag.TAG;
 
@@ -266,6 +295,8 @@ public class ComposeMessageActivity extends Activity
     private static final int KILOBYTE = 1024;
 
     private ContentResolver mContentResolver;
+
+    private PickupGestureDetector mPickupDetector;
 
     private BackgroundQueryHandler mBackgroundQueryHandler;
 
@@ -2100,6 +2131,8 @@ public class ComposeMessageActivity extends Activity
 
         initialize(savedInstanceState, 0);
 
+        mPickupDetector = new PickupGestureDetector(ComposeMessageActivity.this, this);
+
         if (TRACE) {
             android.os.Debug.startMethodTracing("compose");
         }
@@ -2490,6 +2523,12 @@ public class ComposeMessageActivity extends Activity
             }
         }, 100);
 
+        TelephonyManager tm = (TelephonyManager) getSystemService(Service.TELEPHONY_SERVICE);
+        if (MessagingPreferenceActivity.isSmartCallEnabled(ComposeMessageActivity.this)
+              && tm.getCallState() == TelephonyManager.CALL_STATE_IDLE) {
+            mPickupDetector.enable();
+        }
+
         mIsRunning = true;
         updateThreadIdIfRunning();
         mConversation.markAsRead(true);
@@ -2511,6 +2550,8 @@ public class ComposeMessageActivity extends Activity
         //Contact.stopPresenceObserver();
 
         removeRecipientsListeners();
+
+        mPickupDetector.disable();
 
         // remove any callback to display a progress spinner
         if (mAsyncDialog != null) {
@@ -4144,6 +4185,30 @@ public class ComposeMessageActivity extends Activity
         }
     }
 
+<<<<<<< HEAD
+=======
+    private CharSequence stripUnicodeIfRequested(CharSequence text) {
+        if (mUnicodeFilter != null) {
+            text = mUnicodeFilter.filter(text);
+        }
+        return text;
+    }
+
+    @Override
+    public void onPickup() {
+        if (!getRecipients().isEmpty()) {
+            mPickupDetector.disable();
+
+            // call the first recipient
+            String number = getRecipients().get(0).getNumber();
+            Intent dialIntent = new Intent(Intent.ACTION_CALL);
+            dialIntent.setData(Uri.fromParts("tel", number, null));
+            dialIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(dialIntent);
+        }
+    }
+
+>>>>>>> 10048ae... [1/3] Mms: Smart Dialer
     private void resetMessage() {
         if (Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
             log("resetMessage");
